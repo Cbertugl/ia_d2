@@ -19,6 +19,32 @@ class Sudoku:
                 if j < size-1:
                     neighbors.append(self.grid[i][j+1])   
                 self.grid[i][j].setNeighbors(neighbors)
+    
+    # ==============================================================================================
+    # STATIC
+    # ==============================================================================================
+    @staticmethod
+    def getSudokuFromFile(filename = "sudoku/1.txt"):
+        file = open(filename, "r")
+        sudoku = Sudoku()
+
+        for i in range(9):
+            line = file.readline()
+
+            for j in range(9):
+                if(line[j] == ''): sudoku.setTileValue(i + 1, j + 1, constants.DOMAIN[0])
+                if(line[j] == '1'): sudoku.setTileValue(i + 1, j + 1, constants.DOMAIN[1])
+                if(line[j] == '2'): sudoku.setTileValue(i + 1, j + 1, constants.DOMAIN[2])
+                if(line[j] == '3'): sudoku.setTileValue(i + 1, j + 1, constants.DOMAIN[3])
+                if(line[j] == '4'): sudoku.setTileValue(i + 1, j + 1, constants.DOMAIN[4])
+                if(line[j] == '5'): sudoku.setTileValue(i + 1, j + 1, constants.DOMAIN[5])
+                if(line[j] == '6'): sudoku.setTileValue(i + 1, j + 1, constants.DOMAIN[6])
+                if(line[j] == '7'): sudoku.setTileValue(i + 1, j + 1, constants.DOMAIN[7])
+                if(line[j] == '8'): sudoku.setTileValue(i + 1, j + 1, constants.DOMAIN[8])
+                if(line[j] == '9'): sudoku.setTileValue(i + 1, j + 1, constants.DOMAIN[9])
+        
+        return sudoku
+
                 
     # ==============================================================================================
     # GETTERS AND SETTERS
