@@ -81,8 +81,15 @@ class Sudoku:
             line = "-"
             for j in range(size):
                 line += "----"
-            print(line)    
+            print(line)
         print("")
+
+    # ==============================================================================================
+    # FUNCTIONS
+    # ==============================================================================================
+    def isComplete():
+        # TODO:
+        pass
 
         
 class Tile:
@@ -110,3 +117,7 @@ class Tile:
 
     def setValue(self, value):
         self.value =  constants.DOMAIN[value]
+    
+    def removeValue(self, value):
+        # TODO:
+        pass
