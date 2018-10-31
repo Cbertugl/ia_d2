@@ -98,8 +98,10 @@ class CSP:
                     variableTwo.addConstraint(constraint)
 
     def __isAssignementComplete(self):
-        # TODO:
-        pass
+        for v in self.variables:
+            if(not v.isSet()): return False
+
+        return True;
 
     def __getUnassignedVariable(self):
         # TODO: récupérer une variable non assignées avec le bon algo
@@ -140,6 +142,9 @@ class Variable:
         self.object = object
         self.constraints = []
 
+    def isSet(self):
+        return(self.getValue() != constants.NO_VALUE)
+
     def getValue(self):
         return self.object.getValue()
 
@@ -156,7 +161,9 @@ class Variable:
         return self.constraints.__len__()
 
     def displayConstraints(self):
-        print("Case", self.object.getPosition(), "; valeur", self.getValue(), ";", self.getNbConstraints(), "contraintes")
+        print("Case", self.object.getPosition(), end = "")
+        if(self.isSet()) :print("; valeur", self.getValue(), end = "")
+        print(";", self.getNbConstraints(), "contraintes")
         for c in self.constraints:
             if(c.variableOne == self): print(c.variableTwo.object.getPosition(), end = ", ")
             else : print(c.variableOne.object.getPosition(), end = ", ")
