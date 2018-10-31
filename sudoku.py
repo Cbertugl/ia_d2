@@ -60,28 +60,32 @@ class Sudoku:
         
     def display(self):
         size = constants.GRID_SIZE
-        line = "-"
+        line = "--"
         for j in range(size):
-            line += "----"
+            line += "-----"
         print(line) 
+        print(line)
         for i in range(size):
-            line = "|"
+            line = "||"
             for j in range(size):
-                if(self.grid[i][j].getValue() == constants.DOMAIN[0]): line += "   |"
-                elif(self.grid[i][j].getValue() == constants.DOMAIN[1]): line += " 1 |"
-                elif(self.grid[i][j].getValue() == constants.DOMAIN[2]): line += " 2 |"
-                elif(self.grid[i][j].getValue() == constants.DOMAIN[3]): line += " 3 |"
-                elif(self.grid[i][j].getValue() == constants.DOMAIN[4]): line += " 4 |"
-                elif(self.grid[i][j].getValue() == constants.DOMAIN[5]): line += " 5 |"
-                elif(self.grid[i][j].getValue() == constants.DOMAIN[6]): line += " 6 |"
-                elif(self.grid[i][j].getValue() == constants.DOMAIN[7]): line += " 7 |"
-                elif(self.grid[i][j].getValue() == constants.DOMAIN[8]): line += " 8 |"
-                elif(self.grid[i][j].getValue() == constants.DOMAIN[9]): line += " 9 |"
+                if(self.grid[i][j].getValue() == constants.DOMAIN[0]): line += "   "
+                elif(self.grid[i][j].getValue() == constants.DOMAIN[1]): line += " 1 "
+                elif(self.grid[i][j].getValue() == constants.DOMAIN[2]): line += " 2 "
+                elif(self.grid[i][j].getValue() == constants.DOMAIN[3]): line += " 3 "
+                elif(self.grid[i][j].getValue() == constants.DOMAIN[4]): line += " 4 "
+                elif(self.grid[i][j].getValue() == constants.DOMAIN[5]): line += " 5 "
+                elif(self.grid[i][j].getValue() == constants.DOMAIN[6]): line += " 6 "
+                elif(self.grid[i][j].getValue() == constants.DOMAIN[7]): line += " 7 "
+                elif(self.grid[i][j].getValue() == constants.DOMAIN[8]): line += " 8 "
+                elif(self.grid[i][j].getValue() == constants.DOMAIN[9]): line += " 9 "
+                if (j+1)%3 == 0 : line += "||"
+                else : line += " |"
             print(line)
-            line = "-"
+            line = "--"
             for j in range(size):
-                line += "----"
+                line += "-----"
             print(line)
+            if (i+1)%3 == 0 : print(line)
         print("")
 
     # ==============================================================================================

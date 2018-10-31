@@ -45,3 +45,8 @@ class CSP:
         var.removeValue()
     
     return constants.FAILURE
+
+
+# class Constraint:
+#   def __init__(self, sudoku):
+#     self.
