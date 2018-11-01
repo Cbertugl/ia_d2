@@ -147,6 +147,8 @@ class CSP:
         for v in self.variables:
             v.displayConstraints()
 
+    # TODO: implémenter AC-3 et le lancer soit une seule fois au début soit
+    # à chaque assignement (voir diapo 33 du cours sur le CSP)
     def backtrackingSearch(self):
         if(self.__isAssignementComplete()): return self.assignment
         
@@ -158,6 +160,7 @@ class CSP:
 
                 result = self.backtrackingSearch()
                 if(result != constants.FAILURE): return result
+                
                 var.removeValue()
         
         return constants.FAILURE
