@@ -134,8 +134,37 @@ class CSP:
         return mrvVar
 
     def __orderDomainValues(self, var):
-        # TODO: implémenter least constraining value
-        return constants.Domain.getAsArray()
+        # Least constraining value
+        domain = []
+        constrainingRatio = []
+        
+        for value in constants.Domain.getAsArray():
+          # copie de la variable couple dans la contrainte pour ne pas modifier la vrai valeur 
+          varCopy = None
+          sumOfDomainsLength = 0 # comptage du nombre de possibilité du domaine de chaque variable couple de la contrainte sur laquelle on travaille
+          # on parcourt chacune des contraintes
+          for constraint in var.getConstraints() :
+            varCopy = constraint.variableTwo # on fait une copie de la variable 'couple' de la contrainte sur laquelle on travaille
+            if value in varCopy.getDomain() : # on regarde si la valeur qu'on a choisit va influencer le domaine de cette variable
+              varCopy.removeFromDomain(value) # si oui on la retire de la copie 
+            sumOfDomainsLength += varCopy.getDomainLength() # on additionne pour chaque contrainte la taille du domaine associé
+
+          # Avec ces données, on arrange dans un tableau les valeurs qui diminue le moins possible les domaines des autres variables
+          if len(constrainingRatio) == 0 :
+            domain.append(value)
+            constrainingRatio.append(sumOfDomainsLength)
+          else :
+            for pos , sumValue in enumerate(constrainingRatio) :
+              if sumOfDomainsLength > sumValue : # si, pour la valeur de travaille, on trouve que la taille totale des domaines est plus grande, on positionne avant dans le tableau 
+                domain.insert(pos,value)
+                constrainingRatio.insert(pos,sumOfDomainsLength)
+              if pos + 1 == len(constrainingRatio) :
+                domain.append(value)
+                constrainingRatio.append(sumOfDomainsLength)
+                break # sinon pos s'indente et len(constrainingRatio) de meme -> donc boucle infini
+
+        return domain
+        # return constants.Domain.getAsArray()
 
     def __isConsistentWithValue(self, var, value):
         var.setValue(value)
@@ -184,7 +213,7 @@ class CSP:
             
             # Checking inconsistent values. If any found, we need to check every other arc of the variable who saw his domain shrink
             if self.removeInconsistentValues(arc.variableOne,arc.variableTwo):
-                for constraint in arc.variableOne:
+                for constraint in arc.variableOne.getConstraints():
                     if constraint not in queue:
                         queue.append(constraint)
 
@@ -213,6 +242,28 @@ class CSP:
 
 
 
+    # def minimumRemainingValues(self):
+    #   assert len(self.variables) > 0
+    #   variableChosen = None
+    #   remainingValuesV = 10
+    #   for variable in self.variables :
+    #     if not variable.isSet() :
+    #       remainingValues = 9
+    #       possibleValuesDomain = []
+    #       for constraint in variable.getConstraints() :
+    #         # Il n'y a au maximum qu'une seule variable ici qui sera différente de zéro 
+    #         if constraint.variableOne.getValue() != constants.NO_VALUE :
+    #           if not constraint.variableOne.getValue() in possibleValuesDomain :
+    #             possibleValuesDomain.append(constraint.variableOne.getValue())
+    #             remainingValues -= 1
+    #         if constraint.variableTwo.getValue() != constants.NO_VALUE :
+    #           if not constraint.variableTwo.getValue() in possibleValuesDomain :
+    #             possibleValuesDomain.append(constraint.variableTwo.getValue())
+    #             remainingValues -= 1
+    #       if remainingValues < remainingValuesV :
+    #         variableChosen = variable
+    #         remainingValuesV = remainingValues
+    #   return variableChosen
 
 
 
