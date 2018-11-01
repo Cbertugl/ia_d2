@@ -1,6 +1,6 @@
-from enum import Enum
+from enum import IntEnum
 
-class Domain(Enum):
+class Domain(IntEnum):
     ONE = 1
     TWO = 2
     THREE = 3
@@ -10,6 +10,10 @@ class Domain(Enum):
     SEVEN = 7
     EIGHT = 8
     NINE = 9
+
+    @staticmethod
+    def getAsArray():
+        return list(map(int, Domain))
 
 NO_VALUE = 0
 
