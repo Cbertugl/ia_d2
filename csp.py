@@ -106,23 +106,30 @@ class CSP:
 
     def __getUnassignedVariable(self):
 
+        # Minimum remining values
         mrv = len(constants.Domain)
         init = True
+        
+        # For each variable
         for var in self.variables:
+            
+            # If the value is not set
             if not var.isSet():
+                # Initialisation of return object
                 if init == True:
                     mrvVar = var
                     init = False
+                    
+                # If the remaining value is less than the current mrv, then we update the mrv and the return object
                 if var.getDomainLength() < mrv:
                     mrv = var.getDomainLength()
                     mrvVar = var
+                    
+                # Degree heurisitic : choosing the variable with the most constaints
                 if var.getDomainLength() == mrv and mrv < len(constants.Domain):
                     if var.getNbConstraints() > mrvVar.getNbConstraints():
                         mrvVar = var
-        '''
-        mrvVar = random.choice(self.variables)
-        while(mrvVar.isSet()): mrvVar = random.choice(self.variables)
-        '''
+
         return mrvVar
 
     def __orderDomainValues(self, var):
@@ -147,8 +154,7 @@ class CSP:
         for v in self.variables:
             v.displayConstraints()
 
-    # TODO: implémenter AC-3 et le lancer soit une seule fois au début soit
-    # à chaque assignement (voir diapo 33 du cours sur le CSP)
+ 
     def backtrackingSearch(self):
         if(self.__isAssignementComplete()): return self.assignment
         
@@ -156,6 +162,8 @@ class CSP:
         for value in self.__orderDomainValues(var):
             if(self.__isConsistentWithValue(var, value)):
                 var.setValue(value)
+                
+                # Refreshing arc consistency
                 self.arcConsistency()
 
                 result = self.backtrackingSearch()
@@ -168,28 +176,38 @@ class CSP:
     
     def arcConsistency(self):
         queue = self.constraints
+        
+        # For each arc (same as constraints here)
         while queue:
             arc = queue.pop()
+            
+            # Checking inconsistent values. If any found, we need to check every other arc of the variable who saw his domain shrink
             if self.removeInconsistentValues(arc.variableOne,arc.variableTwo):
                 for constraint in arc.variableOne:
                     if constraint not in queue:
                         queue.append(constraint)
 
     
+    #NOTE: Une remodélisation du système de contrainte doit être fait pour généraliser la fonction correctement à l'image du cours. A faire si possible.
     def removeInconsistentValues(self,varI, varJ):
         removed = False
         
+        # For each remaining value available for I
         for valueI in varI.getDomain():
             check = False
+            
+            # For each remaining value available for J
             for valueJ in varJ.getDomain():
+                # If the constraint between the two variables can be satisfied (always not equal), we try the next I value
                 if(valueI != valueJ):
                     check = True
                     break
-                
+            # If no suitable value can be found in the restrained J domain, then the I value can't be chosed and must be removed
             if check == False :
                 varI.removeFromDomain(valueI)
                 removed = True
-                    
+        
+        # Is true if any variable has been removed from the variable I, false otherwise
         return removed
 
 
@@ -197,6 +215,7 @@ class Variable:
     def __init__(self, object):
         self.object = object
         self.constraints = []
+        # Remaining domain values of the variable, initialised as the entierty of domain values
         self.domain = constants.Domain.getAsArray()
 
     def isSet(self):
@@ -235,12 +254,15 @@ class Variable:
             else : print(c.variableOne.object.getPosition(), end = ", ")
         print(end = "\n\n")
         
+    # Get the remaining domain values of the variable    
     def getDomain(self):
         return self.domain    
-        
+    
+    # Remove a given value from the remaining domain values of the variable
     def removeFromDomain(self, value):
         self.domain.remove(value)
         
+    # Get the number of remaining domain values of the variable
     def getDomainLength(self):
         return len(self.domain)
 

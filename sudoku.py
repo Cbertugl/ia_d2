@@ -5,8 +5,14 @@ class Sudoku:
     # CONSTRUCTOR
     # ==============================================================================================
     def __init__(self):
+        
+        # Size of nine by nine per default
         size = constants.GRID_SIZE
+        
+        # Creating the sudoku grid
         self.grid = [[Tile(j+1,i+1) for i in range(size)] for j in range(size)]
+        
+        # Setting links between tiles
         for i in range(size): 
             for j in range(size):
                 neighbors = []

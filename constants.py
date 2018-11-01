@@ -1,5 +1,6 @@
 from enum import IntEnum
 
+# Sudoku tiles possible values, our CSP domain
 class Domain(IntEnum):
     ONE = 1
     TWO = 2
