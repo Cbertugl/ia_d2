@@ -115,7 +115,6 @@ class CSP:
         return constants.Domain.getAsArray()
 
     def __isConsistentWithValue(self, var, value):
-        # TODO: implémenter AC-3 ici ?
         var.setValue(value)
 
         for c in var.getConstraints():
@@ -133,6 +132,8 @@ class CSP:
         for v in self.variables:
             v.displayConstraints()
 
+    # TODO: implémenter AC-3 et le lancer soit une seule fois au début soit
+    # à chaque assignement (voir diapo 33 du cours sur le CSP)
     def backtrackingSearch(self):
         if(self.__isAssignementComplete()): return self.assignment
         
