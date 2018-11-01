@@ -105,10 +105,25 @@ class CSP:
         return True
 
     def __getUnassignedVariable(self):
-        # TODO: récupérer une variable non assignée avec le bon algo
-        var = random.choice(self.variables)
-        while(var.isSet()): var = random.choice(self.variables)
-        return var
+
+        mrv = len(constants.Domain)
+        init = True
+        for var in self.variables:
+            if not var.isSet():
+                if init == True:
+                    mrvVar = var
+                    init = False
+                if var.getDomainLength() < mrv:
+                    mrv = var.getDomainLength()
+                    mrvVar = var
+                if var.getDomainLength() == mrv and mrv < len(constants.Domain):
+                    if var.getNbConstraints() > mrvVar.getNbConstraints():
+                        mrvVar = var
+        '''
+        mrvVar = random.choice(self.variables)
+        while(mrvVar.isSet()): mrvVar = random.choice(self.variables)
+        '''
+        return mrvVar
 
     def __orderDomainValues(self, var):
         # TODO: implémenter least constraining value
@@ -139,18 +154,47 @@ class CSP:
         for value in self.__orderDomainValues(var):
             if(self.__isConsistentWithValue(var, value)):
                 var.setValue(value)
+                self.arcConsistency()
 
                 result = self.backtrackingSearch()
                 if(result != constants.FAILURE): return result
                 var.removeValue()
         
         return constants.FAILURE
+    
+    
+    def arcConsistency(self):
+        queue = self.constraints
+        while queue:
+            arc = queue.pop()
+            if self.removeInconsistentValues(arc.variableOne,arc.variableTwo):
+                for constraint in arc.variableOne:
+                    if constraint not in queue:
+                        queue.append(constraint)
+
+    
+    def removeInconsistentValues(self,varI, varJ):
+        removed = False
+        
+        for valueI in varI.getDomain():
+            check = False
+            for valueJ in varJ.getDomain():
+                if(valueI != valueJ):
+                    check = True
+                    break
+                
+            if check == False :
+                varI.removeFromDomain(valueI)
+                removed = True
+                    
+        return removed
 
 
 class Variable:
     def __init__(self, object):
         self.object = object
         self.constraints = []
+        self.domain = constants.Domain.getAsArray()
 
     def isSet(self):
         return(self.getValue() != constants.NO_VALUE)
@@ -172,6 +216,12 @@ class Variable:
 
     def getConstraints(self):
         return self.constraints
+    
+    #def getConstraint(self,var):
+    #    for c in self.constraints:
+    #        if (c.variableOne == self and c.variableTwo = var) or (c.variableTwo = self and c.variableOne = var):
+    #            return c
+    #    return constants.FAILURE
 
     def displayConstraints(self):
         print("Case", self.object.getPosition(), end = "")
@@ -181,6 +231,15 @@ class Variable:
             if(c.variableOne == self): print(c.variableTwo.object.getPosition(), end = ", ")
             else : print(c.variableOne.object.getPosition(), end = ", ")
         print(end = "\n\n")
+        
+    def getDomain(self):
+        return self.domain    
+        
+    def removeFromDomain(self, value):
+        self.domain.remove(value)
+        
+    def getDomainLength(self):
+        return len(self.domain)
 
 
 class NotEqualConstraint:
