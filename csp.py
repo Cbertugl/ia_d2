@@ -107,6 +107,7 @@ class CSP:
     def __getUnassignedVariable(self):
 
         # Minimum remining values
+
         mrv = len(constants.Domain)
         init = True
         
@@ -211,6 +212,34 @@ class CSP:
         return removed
 
 
+
+    def minimumRemainingValues(self):
+      assert len(self.variables) > 0
+      variableChosen = None
+      remainingValuesV = 10
+      for variable in self.variables :
+        if not variable.isSet() :
+          remainingValues = 9
+          possibleValuesDomain = []
+          for constraint in variable.getConstraints() :
+            # Il n'y a au maximum qu'une seule variable ici qui sera différente de zéro 
+            if constraint.variableOne.getValue() != constants.NO_VALUE :
+              if not constraint.variableOne.getValue() in possibleValuesDomain :
+                possibleValuesDomain.append(constraint.variableOne.getValue())
+                remainingValues -= 1
+            if constraint.variableTwo.getValue() != constants.NO_VALUE :
+              if not constraint.variableTwo.getValue() in possibleValuesDomain :
+                possibleValuesDomain.append(constraint.variableTwo.getValue())
+                remainingValues -= 1
+          if remainingValues < remainingValuesV :
+            variableChosen = variable
+            remainingValuesV = remainingValues
+      return variableChosen
+
+
+
+
+
 class Variable:
     def __init__(self, object):
         self.object = object
@@ -280,3 +309,4 @@ class NotEqualConstraint:
             return True
 
         return(self.variableOne.getValue() != self.variableTwo.getValue())
+
