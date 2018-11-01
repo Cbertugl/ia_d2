@@ -213,28 +213,6 @@ class CSP:
 
 
 
-    def minimumRemainingValues(self):
-      assert len(self.variables) > 0
-      variableChosen = None
-      remainingValuesV = 10
-      for variable in self.variables :
-        if not variable.isSet() :
-          remainingValues = 9
-          possibleValuesDomain = []
-          for constraint in variable.getConstraints() :
-            # Il n'y a au maximum qu'une seule variable ici qui sera différente de zéro 
-            if constraint.variableOne.getValue() != constants.NO_VALUE :
-              if not constraint.variableOne.getValue() in possibleValuesDomain :
-                possibleValuesDomain.append(constraint.variableOne.getValue())
-                remainingValues -= 1
-            if constraint.variableTwo.getValue() != constants.NO_VALUE :
-              if not constraint.variableTwo.getValue() in possibleValuesDomain :
-                possibleValuesDomain.append(constraint.variableTwo.getValue())
-                remainingValues -= 1
-          if remainingValues < remainingValuesV :
-            variableChosen = variable
-            remainingValuesV = remainingValues
-      return variableChosen
 
 
 
