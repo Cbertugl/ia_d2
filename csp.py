@@ -105,7 +105,7 @@ class CSP:
         return True
 
     def __getUnassignedVariable(self):
-        # TODO: récupérer une variable non assignée avec le bon algo
+        # TODO: implémenter MRV et degree heuristic
         var = random.choice(self.variables)
         while(var.isSet()): var = random.choice(self.variables)
         return var
@@ -115,6 +115,7 @@ class CSP:
         return constants.Domain.getAsArray()
 
     def __isConsistentWithValue(self, var, value):
+        # TODO: implémenter AC-3 ici ?
         var.setValue(value)
 
         for c in var.getConstraints():
@@ -142,6 +143,7 @@ class CSP:
 
                 result = self.backtrackingSearch()
                 if(result != constants.FAILURE): return result
+                
                 var.removeValue()
         
         return constants.FAILURE
