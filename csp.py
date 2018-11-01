@@ -1,5 +1,6 @@
 import constants
 import itertools
+import random
 
 class CSP:
     # ================================================================================================
@@ -101,19 +102,28 @@ class CSP:
         for v in self.variables:
             if(not v.isSet()): return False
 
-        return True;
+        return True
 
     def __getUnassignedVariable(self):
-        # TODO: récupérer une variable non assignées avec le bon algo
-        pass
+        # TODO: récupérer une variable non assignée avec le bon algo
+        var = random.choice(self.variables)
+        while(var.isSet()): var = random.choice(self.variables)
+        return var
 
     def __orderDomainValues(self, var):
         # TODO: implémenter least constraining value
-        pass
+        return constants.Domain.getAsArray()
 
-    def __isConsistentWithValue(self, value):
-        # TODO:
-        pass
+    def __isConsistentWithValue(self, var, value):
+        var.setValue(value)
+
+        for c in var.getConstraints():
+            if(not c.check()):
+                var.removeValue()
+                return False
+
+        var.removeValue()
+        return True
 
     # ================================================================================================
     # PUBLIC FUNCTIONS
@@ -123,11 +133,11 @@ class CSP:
             v.displayConstraints()
 
     def backtrackingSearch(self):
-        if(self.isAssignementComplete()): return self.assignment
+        if(self.__isAssignementComplete()): return self.assignment
         
         var = self.__getUnassignedVariable()
         for value in self.__orderDomainValues(var):
-            if(self.__isConsistentWithValue(value)):
+            if(self.__isConsistentWithValue(var, value)):
                 var.setValue(value)
 
                 result = self.backtrackingSearch()
@@ -160,6 +170,9 @@ class Variable:
     def getNbConstraints(self):
         return self.constraints.__len__()
 
+    def getConstraints(self):
+        return self.constraints
+
     def displayConstraints(self):
         print("Case", self.object.getPosition(), end = "")
         if(self.isSet()) :print("; valeur", self.getValue(), end = "")
@@ -176,4 +189,10 @@ class NotEqualConstraint:
         self.variableTwo = variableTwo
 
     def check(self):
+        if(
+            self.variableOne.getValue() == constants.NO_VALUE or
+            self.variableTwo.getValue() == constants.NO_VALUE
+        ):
+            return True
+
         return(self.variableOne.getValue() != self.variableTwo.getValue())
