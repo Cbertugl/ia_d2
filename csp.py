@@ -91,64 +91,74 @@ class CSP:
 
     def __getUnassignedVariable(self):
         # Minimum remaining values
-        mrv = len(constants.Domain)
-        init = True
-        
-        # For each variable
-        for var in self.variables:
-            
-            # If the value is not set
-            if not var.isSet():
-                # Initialisation of return object
-                if init == True:
-                    mrvVar = var
-                    init = False
-                    
-                # If the remaining value is less than the current mrv, then we update the mrv and the return object
-                if var.getDomainLength() < mrv:
-                    mrv = var.getDomainLength()
-                    mrvVar = var
-                    
-                # Degree heurisitic : choosing the variable with the most constraints
-                if var.getDomainLength() == mrv and mrv < len(constants.Domain):
-                    if var.getNbConstraints() > mrvVar.getNbConstraints():
-                        mrvVar = var
-
-        return mrvVar
+        variableChosen = None
+        remainingValuesV = 10
+        for variable in self.variables :
+            if not variable.isSet() :
+                remainingValues = 9
+                possibleValuesDomain = []
+                for constraint in variable.getConstraints() :
+                    # Il n'y a au maximum qu'une seule variable ici qui sera différente de zéro
+                    if constraint.variableOne.getValue() != constants.NO_VALUE :
+                        if not constraint.variableOne.getValue() in possibleValuesDomain :
+                            possibleValuesDomain.append(constraint.variableOne.getValue())
+                            remainingValues -= 1
+                    if constraint.variableTwo.getValue() != constants.NO_VALUE :
+                        if not constraint.variableTwo.getValue() in possibleValuesDomain :
+                            possibleValuesDomain.append(constraint.variableTwo.getValue())
+                            remainingValues -= 1
+                if remainingValues < remainingValuesV :
+                    variableChosen = variable
+                    remainingValuesV = remainingValues
+                # TODO: implémenter Degree heuristic pour le cas d'égalité
+                # TODO: voir code de Camille juste en dessous
+                # # Degree heurisitic : choosing the variable with the most constaints
+                # if var.getDomainLength() == mrv and mrv < len(constants.Domain):
+                #     if var.getNbConstraints() > mrvVar.getNbConstraints():
+                #         mrvVar = var
+        return variableChosen
 
     # Least constraining value
     def __orderDomainValues(self, var):
-        domain = []
-        constrainingRatio = []
+        # ==========================================================================================
+        # Random
+        # ==========================================================================================
+        return constants.Domain.getAsArray()
+
+        # ==========================================================================================
+        # Least constraining value Arnaud
+        # ==========================================================================================
+        # domain = []
+        # constrainingRatio = []
         
-        # TODO: parcourir le domaine de la variable, pas le domaine entier
-        for value in constants.Domain.getAsArray():
-            # copie de la variable couple dans la contrainte pour ne pas modifier la vrai valeur 
-            varCopy = None
-            sumOfDomainsLength = 0 # comptage du nombre de possibilité du domaine de chaque variable couple de la contrainte sur laquelle on travaille
-            # on parcourt chacune des contraintes
-            for constraint in var.getConstraints() :
-                # TODO: pas une vraie copie
-                varCopy = constraint.variableTwo # on fait une copie de la variable 'couple' de la contrainte sur laquelle on travaille
-                if value in varCopy.getDomain() : # on regarde si la valeur qu'on a choisit va influencer le domaine de cette variable
-                    varCopy.removeFromDomain(value) # si oui on la retire de la copie # TODO: donc ça vide le tableau ici
-                    sumOfDomainsLength += varCopy.getDomainLength() # on additionne pour chaque contrainte la taille du domaine associé
+        # # TODO: parcourir le domaine de la variable, pas le domaine entier
+        # for value in constants.Domain.getAsArray():
+        #     # copie de la variable couple dans la contrainte pour ne pas modifier la vrai valeur 
+        #     varCopy = None
+        #     sumOfDomainsLength = 0 # comptage du nombre de possibilité du domaine de chaque variable couple de la contrainte sur laquelle on travaille
+        #     # on parcourt chacune des contraintes
+        #     for constraint in var.getConstraints() :
+        #         # TODO: pas une vraie copie
+        #         varCopy = constraint.variableTwo # on fait une copie de la variable 'couple' de la contrainte sur laquelle on travaille
+        #         if value in varCopy.getDomain() : # on regarde si la valeur qu'on a choisit va influencer le domaine de cette variable
+        #             varCopy.removeFromDomain(value) # si oui on la retire de la copie # TODO: donc ça vide le tableau ici
+        #             sumOfDomainsLength += varCopy.getDomainLength() # on additionne pour chaque contrainte la taille du domaine associé
 
-            # Avec ces données, on arrange dans un tableau les valeurs qui diminue le moins possible les domaines des autres variables
-            if len(constrainingRatio) == 0 :
-                domain.append(value)
-                constrainingRatio.append(sumOfDomainsLength)
-            else :
-                for pos , sumValue in enumerate(constrainingRatio) :
-                    if sumOfDomainsLength > sumValue : # si, pour la valeur de travaille, on trouve que la taille totale des domaines est plus grande, on positionne avant dans le tableau 
-                        domain.insert(pos,value)
-                        constrainingRatio.insert(pos,sumOfDomainsLength)
-                    if pos + 1 == len(constrainingRatio) :
-                        domain.append(value)
-                        constrainingRatio.append(sumOfDomainsLength)
-                        break # sinon pos s'indente et len(constrainingRatio) de meme -> donc boucle infini
+        #     # Avec ces données, on arrange dans un tableau les valeurs qui diminue le moins possible les domaines des autres variables
+        #     if len(constrainingRatio) == 0 :
+        #         domain.append(value)
+        #         constrainingRatio.append(sumOfDomainsLength)
+        #     else :
+        #         for pos , sumValue in enumerate(constrainingRatio) :
+        #             if sumOfDomainsLength > sumValue : # si, pour la valeur de travaille, on trouve que la taille totale des domaines est plus grande, on positionne avant dans le tableau 
+        #                 domain.insert(pos,value)
+        #                 constrainingRatio.insert(pos,sumOfDomainsLength)
+        #             if pos + 1 == len(constrainingRatio) :
+        #                 domain.append(value)
+        #                 constrainingRatio.append(sumOfDomainsLength)
+        #                 break # sinon pos s'indente et len(constrainingRatio) de meme -> donc boucle infini
 
-        return domain
+        # return domain
 
     def __isConsistentWithValue(self, var, value):
         var.setValue(value)
@@ -160,6 +170,47 @@ class CSP:
 
         var.removeValue()
         return True
+
+    def arcConsistency(self):
+        queue = self.constraints # TODO: pas une vraie copie
+        
+        # For each arc (same as constraints here)
+        while queue:
+            # TODO: donc ça vide le tableau ici puis ça ne fait plus rien
+            # au deuxième appel de la fonction
+            arc = queue.pop()
+            
+            # Checking inconsistent values. If any found, we need to check
+            # every other arc of the variable who saw his domain shrink
+            if self.removeInconsistentValues(arc.variableOne,arc.variableTwo):
+                for constraint in arc.variableOne.getConstraints():
+                    if constraint not in queue:
+                        queue.append(constraint)
+    
+    #NOTE: Une remodélisation du système de contrainte doit être fait pour
+    # généraliser la fonction correctement à l'image du cours. A faire si possible.
+    def removeInconsistentValues(self, varI, varJ):
+        removed = False
+        
+        # For each remaining value available for I
+        for valueI in varI.getDomain():
+            check = False
+            
+            # For each remaining value available for J
+            for valueJ in varJ.getDomain():
+                # If the constraint between the two variables can be
+                # satisfied (always not equal), we try the next I value
+                if(valueI != valueJ):
+                    check = True
+                    break
+            # If no suitable value can be found in the restrained J domain,
+            # then the I value can't be chosed and must be removed
+            if check == False :
+                varI.removeFromDomain(valueI)
+                removed = True
+        
+        # True if any variable has been removed from the variable I, false otherwise
+        return removed
 
     # ================================================================================================
     # PUBLIC FUNCTIONS
@@ -186,72 +237,12 @@ class CSP:
         
         return constants.FAILURE
 
-    def arcConsistency(self):
-        queue = self.constraints # TODO: pas une vraie copie
-        
-        # For each arc (same as constraints here)
-        while queue:
-            arc = queue.pop() # TODO: donc ça vide le tableau ici
-            
-            # Checking inconsistent values. If any found, we need to check every other arc of the variable who saw his domain shrink
-            if self.removeInconsistentValues(arc.variableOne,arc.variableTwo):
-                for constraint in arc.variableOne.getConstraints():
-                    if constraint not in queue:
-                        queue.append(constraint)
-
-    
-    #NOTE: Une remodélisation du système de contrainte doit être fait pour généraliser la fonction correctement à l'image du cours. A faire si possible.
-    def removeInconsistentValues(self,varI, varJ):
-        removed = False
-        
-        # For each remaining value available for I
-        for valueI in varI.getDomain():
-            check = False
-            
-            # For each remaining value available for J
-            for valueJ in varJ.getDomain():
-                # If the constraint between the two variables can be satisfied (always not equal), we try the next I value
-                if(valueI != valueJ):
-                    check = True
-                    break
-            # If no suitable value can be found in the restrained J domain, then the I value can't be chosed and must be removed
-            if check == False :
-                varI.removeFromDomain(valueI)
-                removed = True
-        
-        # Is true if any variable has been removed from the variable I, false otherwise
-        return removed
-
-
-    # def minimumRemainingValues(self):
-    #   assert len(self.variables) > 0
-    #   variableChosen = None
-    #   remainingValuesV = 10
-    #   for variable in self.variables :
-    #     if not variable.isSet() :
-    #       remainingValues = 9
-    #       possibleValuesDomain = []
-    #       for constraint in variable.getConstraints() :
-    #         # Il n'y a au maximum qu'une seule variable ici qui sera différente de zéro 
-    #         if constraint.variableOne.getValue() != constants.NO_VALUE :
-    #           if not constraint.variableOne.getValue() in possibleValuesDomain :
-    #             possibleValuesDomain.append(constraint.variableOne.getValue())
-    #             remainingValues -= 1
-    #         if constraint.variableTwo.getValue() != constants.NO_VALUE :
-    #           if not constraint.variableTwo.getValue() in possibleValuesDomain :
-    #             possibleValuesDomain.append(constraint.variableTwo.getValue())
-    #             remainingValues -= 1
-    #       if remainingValues < remainingValuesV :
-    #         variableChosen = variable
-    #         remainingValuesV = remainingValues
-    #   return variableChosen
-
 
 class Variable:
     def __init__(self, object):
         self.object = object
         self.constraints = []
-        # Remaining domain values of the variable, initialised as the entierty of domain values
+        # Remaining domain values of the variable, initialised as the entirety of domain values
         self.domain = constants.Domain.getAsArray()
 
     def isSet(self):
