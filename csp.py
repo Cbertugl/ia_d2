@@ -135,7 +135,7 @@ class CSP:
         # return constants.Domain.getAsArray()
 
         # ==========================================================================================
-        # Least constraining value Arnaud
+        # Least constraining value 
         # ==========================================================================================
         domain = []
         constrainingRatio = []
@@ -169,14 +169,12 @@ class CSP:
                 for pos , sumValue in enumerate(constrainingRatio) :
                     if sumOfDomainsLength > sumValue : # si, pour la valeur de travaille, on trouve que la taille totale des domaines est plus grande, on positionne avant dans le tableau 
                         domain.insert(pos,value)
-                        print(len(constrainingRatio))
                         constrainingRatio.insert(pos,sumOfDomainsLength)
                         break # sinon pos s'indente et len(constrainingRatio) de meme -> donc boucle infini
                     if pos + 1 == len(constrainingRatio) :
                         domain.append(value)
                         constrainingRatio.append(sumOfDomainsLength)
                         break # sinon pos s'indente et len(constrainingRatio) de meme -> donc boucle infini
-
         return domain
 
     def __isConsistentWithValue(self, var, value):
