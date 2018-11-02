@@ -194,13 +194,13 @@ class CSP:
             
             # Checking inconsistent values. If any found, we need to check
             # every other arc of the variable who saw his domain shrink
-            if self.__removeInconsistentValues(arc.variableOne, arc.variableTwo):
+            if self.__removeInconsistentValues(arc.variableOne, arc.variableTwo, arc):
                 for constraint in arc.variableOne.getConstraints():
                     if constraint not in queue:
                         queue.append(constraint)
-    
-    # TODO: rendre générique
-    def __removeInconsistentValues(self, varI, varJ):
+
+    # The constraint between varI and varJ is given to avoir looking for it
+    def __removeInconsistentValues(self, varI, varJ, constraint):
         removed = False
         
         # For each remaining value available for I
@@ -209,9 +209,9 @@ class CSP:
             
             # For each remaining value available for J
             for valueJ in varJ.getDomain():
-                # If the constraint between the two variables can be
-                # satisfied (always not equal), we try the next I value
-                if(valueI != valueJ):
+                # If the constraint between the two variables can be satisfied,
+                # we try the next I value
+                if(constraint.tryConstraint(valueI, valueJ)):
                     check = True
                     break
 
@@ -311,11 +311,19 @@ class NotEqualConstraint:
         self.variableOne = variableOne
         self.variableTwo = variableTwo
 
-    def check(self):
+    # Try the constraint with two values
+    @staticmethod
+    def tryConstraint(valueOne, valueTwo):
         if(
-            self.variableOne.getValue() == constants.NO_VALUE or
-            self.variableTwo.getValue() == constants.NO_VALUE
+            valueOne == constants.NO_VALUE or
+            valueTwo == constants.NO_VALUE
         ):
             return True
 
-        return(self.variableOne.getValue() != self.variableTwo.getValue())
+        return(valueOne != valueTwo)
+
+    def check(self):
+        return NotEqualConstraint.tryConstraint(
+            self.variableOne.getValue(),
+            self.variableTwo.getValue()
+        )
