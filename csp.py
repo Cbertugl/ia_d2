@@ -171,8 +171,8 @@ class CSP:
         var.removeValue()
         return True
 
-    def arcConsistency(self):
-        queue = self.constraints # TODO: pas une vraie copie
+    def __arcConsistency(self):
+        queue = self.constraints.copy() # TODO: pas une vraie copie
         
         # For each arc (same as constraints here)
         while queue:
@@ -182,14 +182,14 @@ class CSP:
             
             # Checking inconsistent values. If any found, we need to check
             # every other arc of the variable who saw his domain shrink
-            if self.removeInconsistentValues(arc.variableOne,arc.variableTwo):
+            if self.__removeInconsistentValues(arc.variableOne,arc.variableTwo):
                 for constraint in arc.variableOne.getConstraints():
                     if constraint not in queue:
                         queue.append(constraint)
     
     #NOTE: Une remodélisation du système de contrainte doit être fait pour
     # généraliser la fonction correctement à l'image du cours. A faire si possible.
-    def removeInconsistentValues(self, varI, varJ):
+    def __removeInconsistentValues(self, varI, varJ):
         removed = False
         
         # For each remaining value available for I
@@ -228,7 +228,7 @@ class CSP:
                 var.setValue(value)
                 
                 # Refreshing arc consistency
-                self.arcConsistency()
+                # self.__arcConsistency()
 
                 result = self.backtrackingSearch()
                 if(result != constants.FAILURE): return result
