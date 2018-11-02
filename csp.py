@@ -138,20 +138,26 @@ class CSP:
         # ==========================================================================================
         # domain = []
         # constrainingRatio = []
-        
-        # # TODO: parcourir le domaine de la variable, pas le domaine entier
         # for value in var.getDomain():
-        #     # copie de la variable couple dans la contrainte pour ne pas modifier la vrai valeur 
-        #     varCopy = None
+        #     print(value)
+        #     # copie du domaine de la variable couple dans la contrainte pour ne pas modifier la vrai valeur 
+        #     domainCopy = None
         #     sumOfDomainsLength = 0 # comptage du nombre de possibilité du domaine de chaque variable couple de la contrainte sur laquelle on travaille
         #     # on parcourt chacune des contraintes
         #     for constraint in var.getConstraints() :
-        #         # TODO: pas une vraie copie
-        #         varCopy = constraint.variableTwo # on fait une copie de la variable 'couple' de la contrainte sur laquelle on travaille
-        #         if value in varCopy.getDomain() : # on regarde si la valeur qu'on a choisit va influencer le domaine de cette variable
-        #             varCopy.removeFromDomain(value) # si oui on la retire de la copie # TODO: donc ça vide le tableau ici
-        #             sumOfDomainsLength += varCopy.getDomainLength() # on additionne pour chaque contrainte la taille du domaine associé
-
+        #         if constraint.variableOne == var : 
+        #           domainCopy = constraint.variableTwo.getDomain().copy() # on fait une copie du domaine de la variable 'couple' de la contrainte sur laquelle on travaille
+        #         else :
+        #           domainCopy = constraint.variableOne.getDomain().copy()
+        #         line = ""
+        #         for k in range(len(domainCopy)):
+        #           line += str(domainCopy[k])
+        #         print(line)
+        #         print(value)
+        #         if value in domainCopy : # on regarde si la valeur qu'on a choisit va influencer le domaine de cette variable
+        #             domainCopy.remove(value) # si oui on la retire de la copie 
+        #             sumOfDomainsLength += len(domainCopy) # on additionne pour chaque contrainte la taille du domaine associé
+        #         # print(len(domainCopy))
         #     # Avec ces données, on arrange dans un tableau les valeurs qui diminue le moins possible les domaines des autres variables
         #     if len(constrainingRatio) == 0 :
         #         domain.append(value)
