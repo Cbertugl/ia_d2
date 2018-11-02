@@ -172,7 +172,7 @@ class CSP:
         return True
 
     def __arcConsistency(self):
-        queue = self.constraints.copy() # TODO: pas une vraie copie
+        queue = self.constraints.copy()
         
         # For each arc (same as constraints here)
         while queue:
