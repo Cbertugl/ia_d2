@@ -112,19 +112,19 @@ class CSP:
                     remainingValuesV = remainingValues
                 # Degree heuristic : choosing the variable with the most constaints
                 elif remainingValues == remainingValuesV :
-                  if self.nbrOfValidConstraints(variableChosen) < self.nbrOfValidConstraints(variable)  :
-                    variableChosen = variable
-                    remainingValuesV = remainingValues
+                    if self.nbrOfValidConstraints(variableChosen) < self.nbrOfValidConstraints(variable)  :
+                        variableChosen = variable
+                        remainingValuesV = remainingValues
         return variableChosen
 
     def nbrOfValidConstraints(self,var):
-      valideConstraints = 0
-      for constraint in var.getConstraints() :
-        if not (
-            constraint.variableOne.getValue() == constants.NO_VALUE and
-            constraint.variableTwo.getValue() == constants.NO_VALUE
-        ): valideConstraints += 1
-      return valideConstraints
+        valideConstraints = 0
+        for constraint in var.getConstraints() :
+            if not (
+                constraint.variableOne.getValue() == constants.NO_VALUE and
+                constraint.variableTwo.getValue() == constants.NO_VALUE
+            ): valideConstraints += 1
+        return valideConstraints
 
     # Least constraining value
     def __orderDomainValues(self, var):
