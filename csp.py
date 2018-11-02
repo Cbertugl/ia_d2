@@ -176,19 +176,16 @@ class CSP:
         
         # For each arc (same as constraints here)
         while queue:
-            # TODO: donc ça vide le tableau ici puis ça ne fait plus rien
-            # au deuxième appel de la fonction
             arc = queue.pop()
             
             # Checking inconsistent values. If any found, we need to check
             # every other arc of the variable who saw his domain shrink
-            if self.__removeInconsistentValues(arc.variableOne,arc.variableTwo):
+            if self.__removeInconsistentValues(arc.variableOne, arc.variableTwo):
                 for constraint in arc.variableOne.getConstraints():
                     if constraint not in queue:
                         queue.append(constraint)
     
-    #NOTE: Une remodélisation du système de contrainte doit être fait pour
-    # généraliser la fonction correctement à l'image du cours. A faire si possible.
+    # TODO: rendre générique
     def __removeInconsistentValues(self, varI, varJ):
         removed = False
         
@@ -203,8 +200,9 @@ class CSP:
                 if(valueI != valueJ):
                     check = True
                     break
+
             # If no suitable value can be found in the restrained J domain,
-            # then the I value can't be chosed and must be removed
+            # then the I value can't be choosen and must be removed
             if check == False :
                 varI.removeFromDomain(valueI)
                 removed = True
@@ -228,7 +226,7 @@ class CSP:
                 var.setValue(value)
                 
                 # Refreshing arc consistency
-                # self.__arcConsistency()
+                self.__arcConsistency()
 
                 result = self.backtrackingSearch()
                 if(result != constants.FAILURE): return result
@@ -268,7 +266,8 @@ class Variable:
 
     # Get the remaining domain values of the variable    
     def getDomain(self):
-        return self.domain    
+        if(self.isSet()): return [self.getValue()]
+        return self.domain
     
     # Remove a given value from the remaining domain values of the variable
     def removeFromDomain(self, value):
