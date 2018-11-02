@@ -140,7 +140,7 @@ class CSP:
         # constrainingRatio = []
         
         # # TODO: parcourir le domaine de la variable, pas le domaine entier
-        # for value in constants.Domain.getAsArray():
+        # for value in var.getDomain():
         #     # copie de la variable couple dans la contrainte pour ne pas modifier la vrai valeur 
         #     varCopy = None
         #     sumOfDomainsLength = 0 # comptage du nombre de possibilité du domaine de chaque variable couple de la contrainte sur laquelle on travaille
