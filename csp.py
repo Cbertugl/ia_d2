@@ -12,6 +12,7 @@ class CSP:
         self.variables = []
         self.constraints = []
         self.__generateVariablesAndConstraints()
+        self.displayVariables()
 
     # ================================================================================================
     # PRIVATE FUNCTIONS
@@ -238,7 +239,6 @@ class CSP:
         return removed
 
 
-
     # def minimumRemainingValues(self):
     #   assert len(self.variables) > 0
     #   variableChosen = None
@@ -261,9 +261,6 @@ class CSP:
     #         variableChosen = variable
     #         remainingValuesV = remainingValues
     #   return variableChosen
-
-
-
 
 
 class Variable:
@@ -293,23 +290,7 @@ class Variable:
 
     def getConstraints(self):
         return self.constraints
-    
-    #def getConstraint(self,var):
-    #    for c in self.constraints:
-    #        if (c.variableOne == self and c.variableTwo = var) or (c.variableTwo = self and c.variableOne = var):
-    #            return c
-    #    return constants.FAILURE
 
-    def display(self):
-        print("Case", self.object.getPosition(), end = "")
-        if(self.isSet()): print("; valeur", self.getValue(), end = "")
-        else: print("; domaine", self.domain, end = "")
-        print(";", self.getNbConstraints(), "contraintes")
-        for c in self.constraints:
-            if(c.variableOne == self): print(c.variableTwo.object.getPosition(), end = ", ")
-            else : print(c.variableOne.object.getPosition(), end = ", ")
-        print(end = "\n\n")
-        
     # Get the remaining domain values of the variable    
     def getDomain(self):
         return self.domain    
@@ -321,6 +302,20 @@ class Variable:
     # Get the number of remaining domain values of the variable
     def getDomainLength(self):
         return len(self.domain)
+
+    def display(self):
+        print("Case", self.object.getPosition(), end = "")
+        print(";", self.getNbConstraints(), "contraintes", end = "")
+        if(self.isSet()): print("; valeur", self.getValue(), end = "")
+        else: print("; domaine", self.domain, end = "")
+        print()
+
+    def displayConstraints(self):
+        print("Case", self.object.getPosition(), end = ": ")
+        for c in self.constraints:
+            if(c.variableOne == self): print(c.variableTwo.object.getPosition(), end = ", ")
+            else : print(c.variableOne.object.getPosition(), end = ", ")
+        print()
 
 
 class NotEqualConstraint:
