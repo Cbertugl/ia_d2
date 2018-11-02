@@ -12,11 +12,16 @@ class CSP:
         self.variables = []
         self.constraints = []
         self.__generateVariablesAndConstraints()
-        self.displayVariables()
 
     # ================================================================================================
     # PRIVATE FUNCTIONS
     # ================================================================================================
+    def __addNotEqualConstraint(self, var1, var2):
+        constraint = NotEqualConstraint(var1, var2)
+        self.constraints.append(constraint)
+        var1.addConstraint(constraint)
+        var2.addConstraint(constraint)
+
     def __generateVariablesAndConstraints(self):
         size = constants.GRID_SIZE
 
@@ -24,40 +29,24 @@ class CSP:
         grid = self.assignment.getGrid()
         variableGrid = [[Variable(grid[j][i]) for i in range(size)] for j in range(size)]
 
-        # On ajoute les variables au CSP
+        # On crée les contraintes sur chaque ligne et chaque colonne
         for i in range(size):
-            for j in range(size):
-                self.variables.append(variableGrid[i][j])
-
-        # On crée les contraintes sur chaque ligne
-        for i in range(size):
+            # Ligne
             row = variableGrid[i]
-
-            for j in range(size):
-                variableOne = row[j]
-
-                for k in range(j + 1, size):
-                    variableTwo = row[k]
-                    constraint = NotEqualConstraint(variableOne, variableTwo)
-                    self.constraints.append(constraint)
-                    variableOne.addConstraint(constraint)
-                    variableTwo.addConstraint(constraint)
-
-        # On crée les contraintes sur chaque colonne
-        for i in range(size):
+            # Colonne
             column = []
-            for row in variableGrid:
-                column.append(row[i]) 
+            for rowTmp in variableGrid:
+                column.append(rowTmp[i])
 
             for j in range(size):
-                variableOne = column[j]
-
+                # On ajoute la variable au CSP
+                self.variables.append(variableGrid[i][j])
+                
                 for k in range(j + 1, size):
-                    variableTwo = column[k]
-                    constraint = NotEqualConstraint(variableOne, variableTwo)
-                    self.constraints.append(constraint)
-                    variableOne.addConstraint(constraint)
-                    variableTwo.addConstraint(constraint)
+                    # Ligne
+                    self.__addNotEqualConstraint(row[j], row[k])
+                    # Colonne
+                    self.__addNotEqualConstraint(column[j], column[k])
 
         # On crée les contraintes dans chaque carré
         for squareI in range(3):
@@ -92,12 +81,7 @@ class CSP:
 
                 # On ajoute les contraintes restantes du carré
                 for p in squareList:
-                    variableOne = p[0]
-                    variableTwo = p[1]
-                    constraint = NotEqualConstraint(variableOne, variableTwo)
-                    self.constraints.append(constraint)
-                    variableOne.addConstraint(constraint)
-                    variableTwo.addConstraint(constraint)
+                    self.__addNotEqualConstraint(p[0], p[1])
 
     def __isAssignementComplete(self):
         for v in self.variables:
