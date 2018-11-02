@@ -110,13 +110,21 @@ class CSP:
                 if remainingValues < remainingValuesV :
                     variableChosen = variable
                     remainingValuesV = remainingValues
-                # TODO: implémenter Degree heuristic pour le cas d'égalité
-                # TODO: voir code de Camille juste en dessous
-                # # Degree heurisitic : choosing the variable with the most constaints
-                # if var.getDomainLength() == mrv and mrv < len(constants.Domain):
-                #     if var.getNbConstraints() > mrvVar.getNbConstraints():
-                #         mrvVar = var
+                # Degree heuristic : choosing the variable with the most constaints
+                elif remainingValues == remainingValuesV :
+                  if self.nbrOfValidConstraints(variableChosen) < self.nbrOfValidConstraints(variable)  :
+                    variableChosen = variable
+                    remainingValuesV = remainingValues
         return variableChosen
+
+    def nbrOfValidConstraints(self,var):
+      valideConstraints = 0
+      for constraint in var.getConstraints() :
+        if not (
+            constraint.variableOne.getValue() == constants.NO_VALUE and
+            constraint.variableTwo.getValue() == constants.NO_VALUE
+        ): valideConstraints += 1
+      return valideConstraints
 
     # Least constraining value
     def __orderDomainValues(self, var):
