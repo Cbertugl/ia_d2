@@ -17,10 +17,12 @@ class CSP:
     # PRIVATE FUNCTIONS
     # ================================================================================================
     def __addNotEqualConstraint(self, var1, var2):
-        constraint = NotEqualConstraint(var1, var2)
-        self.constraints.append(constraint)
-        var1.addConstraint(constraint)
-        var2.addConstraint(constraint)
+        constraint1 = NotEqualConstraint(var1, var2)
+        constraint2 = NotEqualConstraint(var2, var1)
+        self.constraints.append(constraint1)
+        self.constraints.append(constraint2)
+        var1.addConstraint(constraint1)
+        var2.addConstraint(constraint2)
 
     def __generateVariablesAndConstraints(self):
         size = constants.GRID_SIZE
@@ -192,7 +194,7 @@ class CSP:
             # Checking inconsistent values. If any found, we need to check
             # every other arc of the variable who saw his domain shrink
             if self.__removeInconsistentValues(arc.variableOne, arc.variableTwo, arc):
-                for constraint in arc.variableOne.getConstraints():
+                for constraint in arc.getNeighbourConstraints(self.constraints, arc.variableOne):
                     if constraint not in queue:
                         queue.append(constraint)
 
@@ -221,30 +223,32 @@ class CSP:
         # True if any variable has been removed from the variable I, false otherwise
         return removed
 
-    # ================================================================================================
-    # PUBLIC FUNCTIONS
-    # ================================================================================================
-    def displayVariables(self):
-        for v in self.variables:
-            v.display()
-
-    def backtrackingSearch(self):
+    def __recursiveBacktrackingSearch(self):
         if(self.__isAssignementComplete()): return self.assignment
-
-        # Refreshing arc consistency
-        self.__arcConsistency()
         
         var = self.__getUnassignedVariable()
         for value in self.__orderDomainValues(var):
             if(self.__isConsistentWithValue(var, value)):
                 var.setValue(value)
 
-                result = self.backtrackingSearch()
+                result = self.__recursiveBacktrackingSearch()
                 if(result != constants.FAILURE): return result
                 
                 var.removeValue()
         
         return constants.FAILURE
+
+    # ================================================================================================
+    # PUBLIC FUNCTIONS
+    # ================================================================================================
+    def displayVariables(self):
+        for v in self.variables:
+            v.display()
+        
+    def backtrackingSearch(self):
+        # AC-3
+        self.__arcConsistency()
+        return self.__recursiveBacktrackingSearch()
 
 
 class Variable:
@@ -318,6 +322,13 @@ class NotEqualConstraint:
     def __init__(self, variableOne, variableTwo):
         self.variableOne = variableOne
         self.variableTwo = variableTwo
+
+    @staticmethod
+    def getNeighbourConstraints(list, variableOne):
+        ret = []
+        for c in list:
+            if c.variableTwo == variableOne: ret.append(c)
+        return ret
 
     # Try the constraint with two values
     @staticmethod
