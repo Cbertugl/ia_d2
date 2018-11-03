@@ -1,6 +1,5 @@
 import constants
 import itertools
-import random
 
 class CSP:
 
